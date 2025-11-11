@@ -1,19 +1,22 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Gone Phishing</title>
-    <style>
-      body { font-family: system-ui, sans-serif; padding: 12px; width: 220px; }
-      button { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #ccc; }
-    </style>
-  </head>
-  <body>
-    <h3>Gone Phishing</h3>
-    <textarea id="inputText"></textarea>
-    <button id="go">Evaluate</button>
-    <pre id="out"></pre>
-    <script src="eval.js"></script>
-    <script src="eval-ui.js"></script>
-  </body>
-</html>
+<!-- inside <body> just above the textarea/button block -->
+<h3>Gone Phishing</h3>
+
+<label for="modelSelect">Model:</label>
+<select id="modelSelect" style="width:100%;margin-bottom:8px;">
+  <option value="tfidf">TF-IDF + Logistic Regression</option>
+  <option value="bert">BERT (zero-shot via HF API)</option>
+</select>
+
+<div id="hfKeyRow" style="display:none;margin-bottom:8px;">
+  <input id="hfKey" type="password" placeholder="Hugging Face API key (hf_…)" style="width:100%;margin-top:4px;" />
+  <button id="saveKey" style="margin-top:6px;">Save API Key</button>
+  <small>Stored locally with chrome.storage; used only for BERT calls.</small>
+</div>
+
+<textarea id="inputText"></textarea>
+<button id="go">Evaluate</button>
+<pre id="out"></pre>
+
+<!-- keep your existing scripts at the end -->
+<script src="eval.js"></script>
+<script src="eval-ui.js"></script>
