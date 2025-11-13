@@ -154,13 +154,46 @@ async function predictWithBertZSC(text, hfApiKey) {
   return { prediction, probabilities: probs };
 }
 
+// ===== New: Python pipeline via local FastAPI server =====
+// Calls http://localhost:8000/predict-phishing-pipeline
+async function predictWithPipeline(text) {
+  const resp = await fetch("http://localhost:8000/predict-phishing-pipeline", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
+
+  if (!resp.ok) {
+    const msg = await resp.text();
+    throw new Error(`Pipeline API error (${resp.status}): ${msg}`);
+  }
+
+  const data = await resp.json();
+  const probsObj = data.probabilities || {};
+  const pPhish = typeof probsObj.phishing === "number" ? probsObj.phishing : 0.5;
+  const pLegit = typeof probsObj.safe === "number" ? probsObj.safe : (1 - pPhish);
+  const probs = [pLegit, pPhish];
+
+  const prediction =
+    typeof data.label_idx === "number"
+      ? data.label_idx
+      : (pPhish >= pLegit ? 1 : 0);
+
+  return { prediction, probabilities: probs };
+}
+
 // ===== Single entry point used by the UI =====
 async function predictText(text, { model = "tfidf", hfApiKey } = {}) {
   if (model === "bert") {
     return predictWithBertZSC(text, hfApiKey);
   }
+  if (model === "pipeline") {
+    return predictWithPipeline(text);
+  }
+  // default: JS TF-IDF model
   return predictWithTfidf(text);
 }
 
 // Expose to popup
 window.predictText = predictText;
+

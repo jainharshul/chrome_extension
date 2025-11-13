@@ -8,7 +8,10 @@
     "default_popup": "popup.html"
   },
   "permissions": ["activeTab", "scripting", "storage"],
-  "host_permissions": ["mail.google.com/*"],
+  "host_permissions": [
+  "mail.google.com/*",
+  "http://localhost:8000/*"
+],
   "background": {
     "service_worker": "background.js"
   },
